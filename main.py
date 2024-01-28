@@ -11,10 +11,11 @@ from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 # Import your forms from the forms.py
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
-
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.getenv("FLASK_KEY")
+
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
@@ -40,7 +41,7 @@ gravatar = Gravatar(app,
 # CREATE DATABASE
 class Base(DeclarativeBase):
     pass
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////mnt/c/Users/aramf/OneDrive/Documents/Programming/Python_100 Days/Day 69/instance/posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
@@ -192,7 +193,6 @@ def logout():
 
 @app.route('/')
 def get_all_posts():
-
     posts = db.session.query(BlogPost).all()
     return render_template("index.html", all_posts=posts, logged_in=current_user.is_authenticated, user=current_user)
 
@@ -289,4 +289,4 @@ def contact():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002)
+    app.run(debug=False)
